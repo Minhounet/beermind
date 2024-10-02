@@ -5,4 +5,7 @@ import com.qmt.beermind.domain.model.BeerGame
 interface BeerGameRepository {
 
     fun getGame(id: Int): BeerGame
+
+    fun getRunningGames() : List<BeerGame>
+    fun createNewGame(): Int
 }

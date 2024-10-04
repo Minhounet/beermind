@@ -93,4 +93,32 @@ class GuessOrderServiceTest {
         service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM))
         verify(beerGameRepository, times(1)).markGameAsWon(1)
     }
+
+    @Test
+    fun Should_increment_attempts_For_each_guess() {
+        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+            BeerGame(
+                1,
+                listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
+                BeerGameState.RUNNING
+            )
+        )
+        service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.DELIRIUM))
+        verify(beerGameRepository, times(1)).incrementAttempts(1)
+    }
+
+    @Test
+    fun Should_set_game_to_lose_When_guess_is_wrong_and_attempts_is_reached() {
+        val beerGame = BeerGame(
+            1,
+            listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
+            BeerGameState.RUNNING
+        )
+
+        val spyBeer = spy(beerGame)
+        `when`(beerGameRepository.getGame(anyInt())).thenReturn(spyBeer)
+        `when`(spyBeer.attempts).thenReturn(10)
+        service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.DELIRIUM))
+        verify(beerGameRepository, times(1)).markGameAsLost(1)
+    }
 }

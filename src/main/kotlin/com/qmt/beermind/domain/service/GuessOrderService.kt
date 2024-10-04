@@ -8,17 +8,22 @@ import com.qmt.beermind.domain.port.outbound.BeerGameRepository
 class GuessOrderService(private val beerGameRepository: BeerGameRepository) : GuessOrderUseCase {
 
     override fun guessOrder(gameId: Int, userInput: List<Beer>): BeerAnswer {
+        beerGameRepository.incrementAttempts(gameId)
         val solution = beerGameRepository.getGame(gameId).beers
         val indexesGuessedItems = getIndexesGuessedItems(userInput, solution)
 
-        val misplacedCandidates = userInput.filterIndexed { index, _ ->  !indexesGuessedItems[index]  }
+        val misplacedCandidates = userInput.filterIndexed { index, _ -> !indexesGuessedItems[index] }
         val nbInGoodPlace = indexesGuessedItems.count { it }
 
-        val nonGuessedItems = solution.filterIndexed { index, _ ->  !indexesGuessedItems[index]  }
+        val nonGuessedItems = solution.filterIndexed { index, _ -> !indexesGuessedItems[index] }
         val misPlaced = misplacedCandidates.count { nonGuessedItems.contains(it) }
 
         if (nbInGoodPlace == solution.size) {
             beerGameRepository.markGameAsWon(gameId)
+        }
+
+        if (10 == beerGameRepository.getGame(gameId).attempts) {
+            beerGameRepository.markGameAsLost(gameId)
         }
 
         return BeerAnswer(nbInGoodPlace, misPlaced)

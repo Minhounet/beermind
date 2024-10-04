@@ -1,10 +1,10 @@
 package com.qmt.beermind.domain.service
 
 import com.qmt.beermind.domain.model.GameLimitException
-import com.qmt.beermind.domain.port.inbound.StartGameUseCase
+import com.qmt.beermind.domain.port.inbound.HandleGamesUserCase
 import com.qmt.beermind.domain.port.outbound.BeerGameRepository
 
-class StartGameService(val gameRepository: BeerGameRepository) : StartGameUseCase {
+class HandleGamesService(private val gameRepository: BeerGameRepository) : HandleGamesUserCase {
 
     override fun startGame(): Int {
         val existingGames = gameRepository.getRunningGames()
@@ -12,6 +12,10 @@ class StartGameService(val gameRepository: BeerGameRepository) : StartGameUseCas
             throw GameLimitException()
         }
         return gameRepository.createNewGame();
+    }
+
+    override fun abortGame(gameId: Int) {
+        gameRepository.markGameAsAborted(gameId)
     }
 
 }

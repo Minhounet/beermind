@@ -7,18 +7,17 @@ import com.qmt.beermind.domain.port.outbound.BeerGameRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.*
 
-class StartGameServiceTest {
+class HandleGamesServiceTest {
 
-    private lateinit var service: StartGameService
+    private lateinit var service: HandleGamesService
     private lateinit var beerGameRepository: BeerGameRepository
 
     @BeforeEach
     fun setUp() {
         beerGameRepository = mock(BeerGameRepository::class.java)
-        service = StartGameService(beerGameRepository)
+        service = HandleGamesService(beerGameRepository)
     }
 
     @Test
@@ -39,4 +38,10 @@ class StartGameServiceTest {
         assertThrows<GameLimitException> { service.startGame() }
     }
 
+    @Test
+    fun Should_mark_game_as_aborted_When_game_is_stopped() {
+
+        service.abortGame(1)
+        verify(beerGameRepository, times(1)).markGameAsAborted(1)
+    }
 }

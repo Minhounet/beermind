@@ -10,4 +10,5 @@ interface BeerGameRepository {
     fun createNewGame(): Int
     fun getGames(): List<BeerGame>
     fun markGameAsWon(id: Int)
+    fun markGameAsAborted(i: Int)
 }

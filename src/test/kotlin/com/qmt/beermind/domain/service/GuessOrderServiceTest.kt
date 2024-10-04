@@ -80,4 +80,17 @@ class GuessOrderServiceTest {
             service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.DELIRIUM, Beer.BREWDOG, Beer.BROOKLYN))
         )
     }
+
+    @Test
+    fun Should_set_game_to_SUCCES_When_code_is_guessed() {
+        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+            BeerGame(
+                1,
+                listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
+                BeerGameState.RUNNING
+            )
+        )
+        service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM))
+        verify(beerGameRepository, times(1)).markGameAsWon(1)
+    }
 }

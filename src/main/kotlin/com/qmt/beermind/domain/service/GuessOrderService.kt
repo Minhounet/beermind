@@ -17,6 +17,10 @@ class GuessOrderService(private val beerGameRepository: BeerGameRepository) : Gu
         val nonGuessedItems = solution.filterIndexed { index, _ ->  !indexesGuessedItems[index]  }
         val misPlaced = misplacedCandidates.count { nonGuessedItems.contains(it) }
 
+        if (nbInGoodPlace == solution.size) {
+            beerGameRepository.markGameAsWon(gameId)
+        }
+
         return BeerAnswer(nbInGoodPlace, misPlaced)
     }
 

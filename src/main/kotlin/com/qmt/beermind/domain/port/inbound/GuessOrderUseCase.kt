@@ -5,6 +5,6 @@ import com.qmt.beermind.domain.model.BeerAnswer
 
 interface GuessOrderUseCase {
 
-    fun guessOrder(gameId: Int, orders: List<Beer>): BeerAnswer
+    fun guessOrder(gameId: Int, userInput: List<Beer>): BeerAnswer
 
 }

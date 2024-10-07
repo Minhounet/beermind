@@ -1,3 +1,3 @@
 package com.qmt.beermind.domain.model
 
-data class BeerAnswer(val nbInGoodPlace: Int, val nbInBadPlace: Int  )
+data class BeerAnswer(val nbInGoodPlace: Int, val nbInBadPlace: Int, val gameState: BeerGameState)

@@ -31,7 +31,7 @@ class GuessOrderServiceTest {
             )
         )
         assertEquals(
-            BeerAnswer(4, 0),
+            BeerAnswer(4, 0, BeerGameState.WIN),
             service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM))
         )
     }
@@ -46,7 +46,7 @@ class GuessOrderServiceTest {
             )
         )
         assertEquals(
-            BeerAnswer(3, 0),
+            BeerAnswer(3, 0, BeerGameState.RUNNING),
             service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BREWDOG, Beer.DELIRIUM))
         )
     }
@@ -61,7 +61,7 @@ class GuessOrderServiceTest {
             )
         )
         assertEquals(
-            BeerAnswer(2, 2),
+            BeerAnswer(2, 2, BeerGameState.RUNNING),
             service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.BROOKLYN))
         )
     }
@@ -76,7 +76,7 @@ class GuessOrderServiceTest {
             )
         )
         assertEquals(
-            BeerAnswer(1, 2),
+            BeerAnswer(1, 2, BeerGameState.RUNNING),
             service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.DELIRIUM, Beer.BREWDOG, Beer.BROOKLYN))
         )
     }
@@ -120,5 +120,21 @@ class GuessOrderServiceTest {
         `when`(spyBeer.attempts).thenReturn(10)
         service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.DELIRIUM))
         verify(beerGameRepository, times(1)).markGameAsLost(1)
+    }
+
+    @Test
+    fun Should_has_lost_state_in_answer_When_guess_is_wrong_and_attempts_is_reached() {
+        val beerGame = BeerGame(
+            1,
+            listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
+            BeerGameState.RUNNING
+        )
+
+        val spyBeer = spy(beerGame)
+        `when`(beerGameRepository.getGame(anyInt())).thenReturn(spyBeer)
+        `when`(spyBeer.attempts).thenReturn(10)
+
+        val actual = service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.DELIRIUM))
+        assertEquals(BeerGameState.LOSE, actual.gameState)
     }
 }

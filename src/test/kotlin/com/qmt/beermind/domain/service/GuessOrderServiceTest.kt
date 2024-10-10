@@ -4,7 +4,7 @@ import com.qmt.beermind.domain.model.Beer
 import com.qmt.beermind.domain.model.BeerAnswer
 import com.qmt.beermind.domain.model.BeerGame
 import com.qmt.beermind.domain.model.BeerGameState
-import com.qmt.beermind.domain.port.outbound.BeerGameRepository
+import com.qmt.beermind.domain.port.outbound.BeerGamePort
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
@@ -13,17 +13,17 @@ import kotlin.test.assertEquals
 class GuessOrderServiceTest {
 
     private lateinit var service: GuessOrderService
-    private lateinit var beerGameRepository: BeerGameRepository
+    private lateinit var beerGamePort: BeerGamePort
 
     @BeforeEach
     fun setUp() {
-        beerGameRepository = mock(BeerGameRepository::class.java)
-        service = GuessOrderService(beerGameRepository)
+        beerGamePort = mock(BeerGamePort::class.java)
+        service = GuessOrderService(beerGamePort)
     }
 
     @Test
     fun Should_return_4_good_0_misplaced_When_order_is_correct() {
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(
             BeerGame(
                 0,
                 listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
@@ -38,7 +38,7 @@ class GuessOrderServiceTest {
 
     @Test
     fun Should_return_3_good_0_misplaced_When_order_is_correct() {
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(
             BeerGame(
                 0,
                 listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
@@ -53,7 +53,7 @@ class GuessOrderServiceTest {
 
     @Test
     fun Should_return_2_good_2_misplaced_When_order_is_partially_correct() {
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(
             BeerGame(
                 0,
                 listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
@@ -68,7 +68,7 @@ class GuessOrderServiceTest {
 
     @Test
     fun Should_return_1_good_2_misplaced_When_order_is_partially_correct() {
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(
             BeerGame(
                 0,
                 listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
@@ -83,7 +83,7 @@ class GuessOrderServiceTest {
 
     @Test
     fun Should_set_game_to_SUCCES_When_code_is_guessed() {
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(
             BeerGame(
                 1,
                 listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
@@ -91,12 +91,12 @@ class GuessOrderServiceTest {
             )
         )
         service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM))
-        verify(beerGameRepository, times(1)).markGameAsWon(1)
+        verify(beerGamePort, times(1)).markGameAsWon(1)
     }
 
     @Test
     fun Should_increment_attempts_For_each_guess() {
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(
             BeerGame(
                 1,
                 listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.BROOKLYN, Beer.DELIRIUM),
@@ -104,7 +104,7 @@ class GuessOrderServiceTest {
             )
         )
         service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.DELIRIUM))
-        verify(beerGameRepository, times(1)).incrementAttempts(1)
+        verify(beerGamePort, times(1)).incrementAttempts(1)
     }
 
     @Test
@@ -116,10 +116,10 @@ class GuessOrderServiceTest {
         )
 
         val spyBeer = spy(beerGame)
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(spyBeer)
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(spyBeer)
         `when`(spyBeer.attempts).thenReturn(10)
         service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.DELIRIUM))
-        verify(beerGameRepository, times(1)).markGameAsLost(1)
+        verify(beerGamePort, times(1)).markGameAsLost(1)
     }
 
     @Test
@@ -131,7 +131,7 @@ class GuessOrderServiceTest {
         )
 
         val spyBeer = spy(beerGame)
-        `when`(beerGameRepository.getGame(anyInt())).thenReturn(spyBeer)
+        `when`(beerGamePort.getGame(anyInt())).thenReturn(spyBeer)
         `when`(spyBeer.attempts).thenReturn(10)
 
         val actual = service.guessOrder(1, listOf(Beer.CHOUFFE, Beer.CHOUFFE, Beer.DELIRIUM, Beer.DELIRIUM))

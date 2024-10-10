@@ -3,7 +3,7 @@ package com.qmt.beermind.domain.service
 import com.qmt.beermind.domain.model.BeerGame
 import com.qmt.beermind.domain.model.BeerGameState
 import com.qmt.beermind.domain.model.GameLimitException
-import com.qmt.beermind.domain.port.outbound.BeerGameRepository
+import com.qmt.beermind.domain.port.outbound.BeerGamePort
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -12,12 +12,12 @@ import org.mockito.Mockito.*
 class HandleGamesServiceTest {
 
     private lateinit var service: HandleGamesService
-    private lateinit var beerGameRepository: BeerGameRepository
+    private lateinit var beerGamePort: BeerGamePort
 
     @BeforeEach
     fun setUp() {
-        beerGameRepository = mock(BeerGameRepository::class.java)
-        service = HandleGamesService(beerGameRepository)
+        beerGamePort = mock(BeerGamePort::class.java)
+        service = HandleGamesService(beerGamePort)
     }
 
     @Test
@@ -34,7 +34,7 @@ class HandleGamesServiceTest {
             BeerGame(8, listOf(), BeerGameState.RUNNING),
             BeerGame(9, listOf(), BeerGameState.RUNNING),
         )
-        `when`(beerGameRepository.getRunningGames()).thenReturn(tenGames)
+        `when`(beerGamePort.getRunningGames()).thenReturn(tenGames)
         assertThrows<GameLimitException> { service.startGame() }
     }
 
@@ -42,6 +42,6 @@ class HandleGamesServiceTest {
     fun Should_mark_game_as_aborted_When_game_is_stopped() {
 
         service.abortGame(1)
-        verify(beerGameRepository, times(1)).markGameAsAborted(1)
+        verify(beerGamePort, times(1)).markGameAsAborted(1)
     }
 }

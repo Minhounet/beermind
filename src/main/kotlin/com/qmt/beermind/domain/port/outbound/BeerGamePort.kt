@@ -2,7 +2,7 @@ package com.qmt.beermind.domain.port.outbound
 
 import com.qmt.beermind.domain.model.BeerGame
 
-interface BeerGameRepository {
+interface BeerGamePort {
 
     fun getGame(id: Int): BeerGame
 
